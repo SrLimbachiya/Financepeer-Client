@@ -1,13 +1,15 @@
 import {Component} from 'react'
-import {Redirect, Link} from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 import Cookie from 'js-cookie'
 
 import './index.css'
 
-class LoginForm extends Component {
+class Signup extends Component {
   state = {
     username: '',
     password: '',
+    confirmPassword: '',
+    fullname: '',
     showSubmitError: false,
     errorMsg: '',
   }
@@ -16,8 +18,16 @@ class LoginForm extends Component {
     this.setState({username: event.target.value})
   }
 
+  onChangeFullName = event => {
+    this.setState({fullname: event.target.value})
+  }
+
   onChangePassword = event => {
     this.setState({password: event.target.value})
+  }
+
+  onChangeConPassword = event => {
+    this.setState({confirmPassword: event.target.value})
   }
 
   onSubmitSuccess = jwtToken => {
@@ -30,11 +40,10 @@ class LoginForm extends Component {
     this.setState({showSubmitError: true, errorMsg})
   }
 
-  submitForm = async event => {
-    event.preventDefault()
-    const {username, password} = this.state
-    const userDetails = {username, password}
-    const url = 'http://localhost:7747/login/'
+  submitForm = async () => {
+    const {username, password, fullname} = this.state
+    const userDetails = {username, fullname, password}
+    const url = 'http://localhost:7747/register/'
     const options = {
       method: 'POST',
       body: JSON.stringify(userDetails),
@@ -42,6 +51,7 @@ class LoginForm extends Component {
         'Content-Type': 'application/json',
       },
     }
+
     const response = await fetch(url, options)
     const data = await response.json()
 
@@ -52,9 +62,18 @@ class LoginForm extends Component {
     }
   }
 
+  checkPasswordAndSubmit = event => {
+    event.preventDefault()
+    const {password, confirmPassword} = this.state
+    if (password === confirmPassword) {
+      this.submitForm()
+    } else {
+      this.setState({showSubmitError: true, errorMsg: "Password didn't match!"})
+    }
+  }
+
   renderPasswordField = () => {
     const {password} = this.state
-
     return (
       <>
         <label className="input-label" htmlFor="password">
@@ -72,9 +91,27 @@ class LoginForm extends Component {
     )
   }
 
+  renderConPasswordField = () => {
+    const {confirmPassword} = this.state
+    return (
+      <>
+        <label className="input-label" htmlFor="password">
+          CONFIRM PASSWORD
+        </label>
+        <input
+          type="password"
+          id="password1"
+          className="password-input-field"
+          value={confirmPassword}
+          onChange={this.onChangeConPassword}
+          placeholder="Password"
+        />
+      </>
+    )
+  }
+
   renderUsernameField = () => {
     const {username} = this.state
-
     return (
       <>
         <label className="input-label" htmlFor="username">
@@ -92,6 +129,25 @@ class LoginForm extends Component {
     )
   }
 
+  renderFullnameField = () => {
+    const {fullname} = this.state
+    return (
+      <>
+        <label className="input-label" htmlFor="username">
+          FULL NAME
+        </label>
+        <input
+          type="text"
+          id="username"
+          className="username-input-field"
+          value={fullname}
+          onChange={this.onChangeFullName}
+          placeholder="Username"
+        />
+      </>
+    )
+  }
+
   render() {
     const isToken = Cookie.get('jwt_token')
     if (isToken !== undefined) {
@@ -100,24 +156,21 @@ class LoginForm extends Component {
 
     const {showSubmitError, errorMsg} = this.state
     return (
-      <div className="login-form-container">
-        <form className="form-container" onSubmit={this.submitForm}>
-          <img
-            src="https://res.cloudinary.com/srlimbachiya/image/upload/v1637904778/KitchensApp/dbimg_cdvppt.png"
-            className="login-website-logo-desktop-img"
-            alt="website logo"
-          />
+      <div className="signup-form-container">
+        <form className="form-container" onSubmit={this.checkPasswordAndSubmit}>
+          <h1>Register</h1>
           <div className="input-container">{this.renderUsernameField()}</div>
+          <div className="input-container">{this.renderFullnameField()}</div>
           <div className="input-container">{this.renderPasswordField()}</div>
-          <button type="submit" className="login-button">
-            Login
+          <div className="input-container">{this.renderConPasswordField()}</div>
+          <button type="submit" className="signup-button">
+            Signup
           </button>
           {showSubmitError && <p className="error-message">*{errorMsg}</p>}
-          <Link to="/signup">Signup</Link>
         </form>
       </div>
     )
   }
 }
 
-export default LoginForm
+export default Signup
