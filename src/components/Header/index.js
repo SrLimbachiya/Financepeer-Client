@@ -1,43 +1,67 @@
-import {withRouter, Link} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
+import {Component} from 'react'
 import Cookie from 'js-cookie'
 import './index.css'
 
-const Header = props => {
-  const {history} = props
+class Header extends Component {
+  state = {fullname: '', init: ''}
 
-  const logMeOut = () => {
+  componentDidMount() {
+    this.getUser()
+  }
+
+  getUser = async () => {
+    const myToken = Cookie.get('jwt_token')
+    const url = 'http://localhost:7747/get-user'
+    const option = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${myToken}`,
+      },
+    }
+    const response = await fetch(url, option)
+    const data = await response.json()
+    const user = data.fullname
+    this.setState(
+      {fullname: data.fullname, init: user.slice(0, 1)},
+      this.randomColorGen,
+    )
+  }
+
+  randomColorGen = () => {
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ff3333', '#ff6600']
+    const randomColor = colors[Math.floor(Math.random() * colors.length)]
+    const thatDiv = document.getElementById('init')
+    thatDiv.style.backgroundColor = randomColor
+  }
+
+  logMeOut = () => {
+    const {history} = this.props
     Cookie.remove('jwt_token')
     history.replace('/login')
   }
 
-  return (
-    <nav className="nav-header">
-      <div className="nav-content">
-        <div className="nav-content nav-bar-large-container">
-          <ul className="nav-menu">
-            <li className="nav-menu-item">
-              <Link className="nav-menu-item-link" to="/">
-                Home
-              </Link>
-            </li>
+  render() {
+    const {fullname, init} = this.state
 
-            <li className="nav-menu-item">
-              {/* <button
-                onClick={logMeOut}
-                type="button"
-                className="logout-desktop-btn"
-              >
-                Logout
-              </button> */}
-              <p className="nav-menu-item-link" onClick={logMeOut}>
-                Logout
-              </p>
-            </li>
-          </ul>
+    return (
+      <nav className="nav-header">
+        <div className="nav-content">
+          <div className="user-data">
+            <div id="init" className="user-init">
+              {init}
+            </div>
+            <p>{fullname}</p>
+          </div>
+          <div className="nav-menu-item">
+            <p className="nav-menu-item-link" onClick={this.logMeOut}>
+              Logout
+            </p>
+          </div>
         </div>
-      </div>
-    </nav>
-  )
+      </nav>
+    )
+  }
 }
 
 export default withRouter(Header)

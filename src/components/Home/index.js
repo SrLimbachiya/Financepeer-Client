@@ -8,7 +8,7 @@ import Header from '../Header'
 import './index.css'
 
 class Home extends Component {
-  state = {upload: [], gotData: [], showData: false}
+  state = {upload: [], gotData: [], showData: false, uploaded: false}
 
   uploadFile = async e => {
     e.preventDefault()
@@ -28,8 +28,8 @@ class Home extends Component {
     try {
       const response = await fetch(apiUrl, options)
       console.log(response)
+      this.setState({uploaded: true})
     } catch {
-      console.log('upload fail')
       alert('Upload Failed')
     }
   }
@@ -59,6 +59,7 @@ class Home extends Component {
   }
 
   getData = async () => {
+    this.setState({uploaded: false})
     const myToken = Cookie.get('jwt_token')
     const apiUrl = 'http://localhost:7747/return/'
     const options = {
@@ -94,16 +95,52 @@ class Home extends Component {
     return null
   }
 
+  renderfunc = () => {
+    const {gotData} = this.state
+    if (gotData.length > 0) {
+      return (
+        <table>
+          <thead>
+            <tr>
+              <th>User Id</th>
+              <th>Content Id</th>
+              <th>Title</th>
+              <th>Body</th>
+            </tr>
+          </thead>
+          <tbody>{this.renderTh(gotData)}</tbody>
+        </table>
+      )
+    }
+    return (
+      <div>
+        <h1 className="no-data-error">
+          No Data in Database, <br /> Please Upload JSON File with Data.
+        </h1>
+      </div>
+    )
+  }
+
+  reserInput = () => {
+    this.target.value = null
+  }
+
   render() {
     const isCookie = Cookie.get('jwt_token')
     if (isCookie === undefined) {
       return <Redirect to="/login" />
     }
-    const {gotData, showData} = this.state
+    const {showData, uploaded} = this.state
+
     return (
       <>
         <Header />
         <div className="home-container">
+          <img
+            className="bg-img"
+            src="https://res.cloudinary.com/srlimbachiya/image/upload/v1637937815/KitchensApp/pngegg_imx2nl.png"
+            alt="bg"
+          />
           <div className="home-content">
             <h1 className="home-heading">Upload Your Json Below</h1>
             <p className="home-description">
@@ -115,34 +152,26 @@ class Home extends Component {
                 id="fileuploader"
                 onChange={this.changeOnUpload}
                 type="file"
-                ref={this.input}
               />
               <button className="shop-now-button" type="submit">
                 Submit
               </button>
               <button
+                type="button"
                 onClick={this.getData}
                 className="shop-now-button"
-                type="submit"
               >
                 Load Data
               </button>
             </form>
+            {uploaded ? (
+              <div className="alert-box">
+                <p>Data has been uploaded to database!</p>
+              </div>
+            ) : null}
           </div>
           <div className="table-container">
-            {showData ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th>User Id</th>
-                    <th>Content Id</th>
-                    <th>Title</th>
-                    <th>Body</th>
-                  </tr>
-                </thead>
-                <tbody>{this.renderTh(gotData)}</tbody>
-              </table>
-            ) : null}
+            {showData ? this.renderfunc() : null}
           </div>
         </div>
       </>

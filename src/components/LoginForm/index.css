@@ -57,7 +57,7 @@
   color: #475569;
 }
 
-.username-input-field {
+.input-field {
   font-size: 14px;
   height: 40px;
   border: 1px solid #d7dfe9;
@@ -66,18 +66,10 @@
   border-radius: 2px;
   margin-top: 5px;
   padding: 8px 16px 8px 16px;
+  box-shadow: 1px 1px 11px 1px rgba(158,157,157,0.13);
 }
 
-.password-input-field {
-  font-size: 14px;
-  height: 40px;
-  border: 1px solid #d7dfe9;
-  background-color: #e2e8f0;
-  color: #64748b;
-  border-radius: 2px;
-  margin-top: 5px;
-  padding: 8px 16px 8px 16px;
-}
+
 
 .login-button {
   font-family: 'Roboto';
@@ -93,6 +85,23 @@
   border: none;
   cursor: pointer;
   outline: none;
+  -webkit-box-shadow: 0px 15px 30px rgba(50, 50, 50, 0.21);
+  -moz-box-shadow: 0px 15px 30px rgba(50, 50, 50, 0.21);
+  box-shadow: 0px 15px 30px rgba(50, 50, 50, 0.21);
+  border-radius: 25px;
+  -webkit-transition: all .4s ease;
+		-moz-transition: all .4s ease;
+		-o-transition: all .4s ease;
+		transition: all .4s ease;
+}
+.login-button:hover {
+  -webkit-box-shadow: 0px 15px 30px rgba(50, 50, 50, 0.41);
+  -moz-box-shadow: 0px 15px 30px rgba(50, 50, 50, 0.41);
+  box-shadow: 0px 15px 30px rgba(50, 50, 50, 0.41);
+  -webkit-transition: all .4s ease;
+		-moz-transition: all .4s ease;
+		-o-transition: all .4s ease;
+		transition: all .4s ease;
 }
 
 .error-message {
@@ -104,4 +113,23 @@
   font-size: 12px;
   line-height: 16px;
   color: #ff0b37;
+}
+
+.show-password-chekcbox-label {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 20px;
+}
+
+
+.login-link {
+  text-decoration: none;
+  margin-top: 25px;
+}
+
+.registered-text {
+  margin-top: 35px;
+  margin-bottom: -25px;
 }

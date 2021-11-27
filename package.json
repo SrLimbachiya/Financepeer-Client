@@ -1,5 +1,5 @@
 {
-  "name": "nxt-trendz-authentication-2",
+  "name": "Financepeer",
   "private": true,
   "version": "1.0.0",
   "engines": {
@@ -7,6 +7,7 @@
     "npm": ">=6"
   },
   "dependencies": {
+    "@ant-design/icons": "4.7.0",
     "@testing-library/jest-dom": "5.11.9",
     "@testing-library/react": "11.2.5",
     "@testing-library/user-event": "12.6.2",
@@ -16,7 +17,9 @@
     "msw": "0.28.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-icons": "4.3.1",
     "react-router-dom": "5.2.0",
+    "react-scripts": "2.1.8",
     "uuid": "8.3.2"
   },
   "devDependencies": {

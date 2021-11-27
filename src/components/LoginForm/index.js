@@ -30,6 +30,16 @@ class LoginForm extends Component {
     this.setState({showSubmitError: true, errorMsg})
   }
 
+  onCheckbox = event => {
+    if (event.currentTarget.checked) {
+      const passInput = document.getElementById('password')
+      passInput.type = 'text'
+    } else {
+      const passInput = document.getElementById('password')
+      passInput.type = 'password'
+    }
+  }
+
   submitForm = async event => {
     event.preventDefault()
     const {username, password} = this.state
@@ -63,7 +73,7 @@ class LoginForm extends Component {
         <input
           type="password"
           id="password"
-          className="password-input-field"
+          className="input-field"
           value={password}
           onChange={this.onChangePassword}
           placeholder="Password"
@@ -83,7 +93,7 @@ class LoginForm extends Component {
         <input
           type="text"
           id="username"
-          className="username-input-field"
+          className="input-field"
           value={username}
           onChange={this.onChangeUsername}
           placeholder="Username"
@@ -109,11 +119,22 @@ class LoginForm extends Component {
           />
           <div className="input-container">{this.renderUsernameField()}</div>
           <div className="input-container">{this.renderPasswordField()}</div>
+          <div className="show-password-chekcbox-label">
+            <input type="checkbox" id="show-pass" onClick={this.onCheckbox} />
+            <label htmlFor="show-pass">Show Password</label>
+          </div>
           <button type="submit" className="login-button">
             Login
           </button>
           {showSubmitError && <p className="error-message">*{errorMsg}</p>}
-          <Link to="/signup">Signup</Link>
+          <p className="registered-text">
+            Not Registered ?{' '}
+            <span>
+              <Link className="login-link" to="/signup">
+                Click Here
+              </Link>
+            </span>
+          </p>
         </form>
       </div>
     )

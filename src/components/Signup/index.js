@@ -1,5 +1,6 @@
 import {Component} from 'react'
-import {Redirect} from 'react-router-dom'
+import {Redirect, Link} from 'react-router-dom'
+import {AiOutlineCheckCircle} from 'react-icons/ai'
 import Cookie from 'js-cookie'
 
 import './index.css'
@@ -11,6 +12,7 @@ class Signup extends Component {
     confirmPassword: '',
     fullname: '',
     showSubmitError: false,
+    userDone: false,
     errorMsg: '',
   }
 
@@ -28,12 +30,6 @@ class Signup extends Component {
 
   onChangeConPassword = event => {
     this.setState({confirmPassword: event.target.value})
-  }
-
-  onSubmitSuccess = jwtToken => {
-    const {history} = this.props
-    Cookie.set('jwt_token', jwtToken, {expires: 2})
-    history.replace('/')
   }
 
   onSubmitFailure = errorMsg => {
@@ -55,20 +51,53 @@ class Signup extends Component {
     const response = await fetch(url, options)
     const data = await response.json()
 
-    if (response.ok === true) {
-      this.onSubmitSuccess(data.jwt_token)
-    } else {
+    if (response.ok) {
+      this.setState({userDone: true}, this.redirectTimeout)
+    } else if (response.status === 400) {
       this.onSubmitFailure(data.error_msg)
     }
   }
 
+  redirectTimeout = () => {
+    setTimeout(() => {
+      const {history} = this.props
+      history.replace('/login')
+    }, 4000)
+  }
+
+  renderUserCreated = () => (
+    <div className="success-login">
+      <div className="card">
+        <div className="upper-side">
+          <AiOutlineCheckCircle size="65px" />
+          <h3 className="status">Success</h3>
+        </div>
+        <div className="lower-side">
+          <p className="message">
+            Congratulations, your account has been successfully created.
+          </p>
+          <Link className="login-link" to="/login">
+            <p className="contBtn">Continue</p>
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+
   checkPasswordAndSubmit = event => {
     event.preventDefault()
-    const {password, confirmPassword} = this.state
-    if (password === confirmPassword) {
-      this.submitForm()
+    const {password, confirmPassword, username} = this.state
+    if (username !== '' && password !== '') {
+      if (password === confirmPassword) {
+        this.submitForm()
+      } else {
+        this.setState({
+          showSubmitError: true,
+          errorMsg: "Password didn't match!",
+        })
+      }
     } else {
-      this.setState({showSubmitError: true, errorMsg: "Password didn't match!"})
+      this.setState({showSubmitError: true, errorMsg: 'Enter Username!'})
     }
   }
 
@@ -138,7 +167,7 @@ class Signup extends Component {
         </label>
         <input
           type="text"
-          id="username"
+          id="fullname"
           className="username-input-field"
           value={fullname}
           onChange={this.onChangeFullName}
@@ -154,20 +183,29 @@ class Signup extends Component {
       return <Redirect to="/" />
     }
 
-    const {showSubmitError, errorMsg} = this.state
+    const {showSubmitError, errorMsg, userDone} = this.state
     return (
       <div className="signup-form-container">
-        <form className="form-container" onSubmit={this.checkPasswordAndSubmit}>
-          <h1>Register</h1>
-          <div className="input-container">{this.renderUsernameField()}</div>
-          <div className="input-container">{this.renderFullnameField()}</div>
-          <div className="input-container">{this.renderPasswordField()}</div>
-          <div className="input-container">{this.renderConPasswordField()}</div>
-          <button type="submit" className="signup-button">
-            Signup
-          </button>
-          {showSubmitError && <p className="error-message">*{errorMsg}</p>}
-        </form>
+        {userDone ? (
+          this.renderUserCreated()
+        ) : (
+          <form
+            className="form-container"
+            onSubmit={this.checkPasswordAndSubmit}
+          >
+            <h1>Register</h1>
+            <div className="input-container">{this.renderUsernameField()}</div>
+            <div className="input-container">{this.renderFullnameField()}</div>
+            <div className="input-container">{this.renderPasswordField()}</div>
+            <div className="input-container">
+              {this.renderConPasswordField()}
+            </div>
+            <button type="submit" className="signup-button">
+              Signup
+            </button>
+            {showSubmitError && <p className="error-message">*{errorMsg}</p>}
+          </form>
+        )}
       </div>
     )
   }
